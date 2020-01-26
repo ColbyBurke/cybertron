@@ -1,6 +1,8 @@
-import { or, contains, find, propEq, compose, map, filter, 
-  anyPass, join, path, reduce, append, __, ifElse, prop, 
-  always, sort, lt, pluck }  from 'ramda'
+import {
+  or, contains, find, propEq, compose, map, filter,
+  anyPass, join, path, reduce, append, __, ifElse, prop,
+  always, sort, lt, pluck, whereEq
+} from 'ramda'
 
 //import fetch from 'isomorphic-fetch'
 import { test } from 'tape-modern'
@@ -33,8 +35,11 @@ import { test } from 'tape-modern'
  */
 const challenge1 = deck => {
   // show card object
-  // console.log(JSON.stringify(deck.cards[0], null, 2))
-  return null
+  console.log(JSON.stringify(deck.cards[0], null, 2))
+
+  console.log(JSON.stringify(find(whereEq({ 'value': 'ACE', 'suit': 'CLUBS' }))(deck.cards)));
+
+  return find(propEq('code', 'AC'))(deck.cards)
 }
 
 /** Level 6 = Challenge 2
@@ -53,8 +58,15 @@ const challenge1 = deck => {
  *
  */
 const challenge2 = deck => {
+  let kh = find(propEq('code', 'KH'))(deck.cards)
+  let kd = find(propEq('code', 'KD'))(deck.cards)
+  let jh = find(propEq('code', 'JH'))(deck.cards)
+  let js = find(propEq('code', 'JS'))(deck.cards)
+  let arr = []
+  arr.push(kh.image, kd.image, jh.image, js.image)
+  console.log(arr);
 
-  return null
+  return arr.join('')
 }
 
 /** level 6 - Challenge 3
@@ -80,7 +92,16 @@ const challenge2 = deck => {
  */
 const challenge3 = (deck, validate) => {
   const correcthand = ['3S', '3H', '3C', 'AH', 'AS'] // create your own
-  const myhand = [] // add your code here
+  const reducer = (x, y) => {
+    if (contains(y.code, correcthand)) {
+      x.push(y)
+      return x
+    }
+    return x
+  }
+  let result = reduce(reducer, [], deck.cards)
+  let myhand = result
+  
   validate(myhand, correcthand)
 }
 
@@ -94,7 +115,19 @@ const challenge3 = (deck, validate) => {
  *
  */
 const challenge4 = deck => {
-  return false 
+  const sorter = (a, b) => {
+    return prop('code', a) > prop('code', b) ? 1 : -1
+  }
+  console.log(sort((a, b) => a > b ? 1 : -1, ['b','c','A', 'a']));
+  
+  console.log(sort(sorter, deck.cards).map(x => x.code));
+  
+  
+  console.log(compose(map(x => prop('code', x)), sort(sorter))(deck.cards));
+  
+  
+  
+  return sort(sorter)(deck.cards)
 }
 
 export default () => {
@@ -107,16 +140,16 @@ export default () => {
           suit: 'CLUBS',
           value: 'ACE',
           images: {
-            svg: 'http://deckofcardsapi.com/static/img/AC.svg',
-            png: 'http://deckofcardsapi.com/static/img/AC.png'
+            svg: 'https://deckofcardsapi.com/static/img/AC.svg',
+            png: 'https://deckofcardsapi.com/static/img/AC.png'
           },
-          image: 'http://deckofcardsapi.com/static/img/AC.png',
+          image: 'https://deckofcardsapi.com/static/img/AC.png',
           code: 'AC'
         })
       })
 
       test('Level 6 - Challenge 2', t => {
-        
+
         const results = challenge2(deck)
 
         t.ok(contains('img/KH', or(results, '')))

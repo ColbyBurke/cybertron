@@ -46,7 +46,7 @@ const data = {
  * map through the data.rows array and return a list of movie docs.
  */
 const challenge1 = () => {
-  return null
+  return map(x => x.doc, data.rows)
 }
 
 /** Level 5 = Challenge 2
@@ -56,7 +56,14 @@ const challenge1 = () => {
  *
  */
 const challenge2 = () => {
-  return null
+
+  let movies = map(x => x.doc, data.rows)
+  console.log(movies);
+  
+  console.log(JSON.stringify(filter(x => Number(x.year) < 1990, movies)));
+  
+  const result = filter(x => Number(x.year) < 1990, movies, null, 0)
+  return result
 }
 
 /** level 5 - Challenge 3
@@ -68,7 +75,18 @@ const challenge2 = () => {
  * check out - append - http://ramdajs.com/docs/#append
  */
 const challenge3 = () => {
-  return null
+  const docs = map(x => x.doc, data.rows)
+  const eighties = filter(x => Number(x.year) >= 1980 && Number(x.year) < 1990, docs)
+  const nineties = filter(x => Number(x.year) >= 1990 && Number(x.year) < 2000, docs)
+  const result = reduce((x, y) => {
+    let obj = {}
+    obj['80s'] = eighties
+    obj['90s'] = nineties
+    return obj
+  }, [], docs)
+  console.log(JSON.stringify(result));
+  
+  return result
 }
 
 /**
@@ -82,7 +100,16 @@ const challenge3 = () => {
  *
  */
 const challenge4 = () => {
-  return [] 
+  const mapper = map(x => `[${x.doc.name}] - [${x.doc.year}]`)
+  let reducer = reduce((x,y) => {
+    let splitted = y.split('').filter(y => y !== '[' && y !== ']' && y !== ' - ').join('')
+    return x + (`<li>${splitted}</li>`)
+
+  }, [])
+  const result = compose(reducer(),mapper())(data.rows).split('')
+  console.log(result);
+  
+  return result 
 }
 
 export default () => {

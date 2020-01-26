@@ -79,28 +79,29 @@ export default function() {
   /* Level Extra - Objects */
   const ex1 = 'Use map to return a list of pet names'
   const exercise1 = () => {
-    return null // return answer here
+    return map(x => x.name, pets)
   }
   const ex2 = 'Use filter to return a list of dead fish'
   const exercise2 = () => {
-    return null // return answer here
+    return filter(x => x.alive === false && x.type === 'fish', pets)
   }
 
   const ex3 = 'Use reduce to return the total age of all the cats'
   const exercise3 = () => {
-    return null // return answer here
+    return reduce((x, y) => y.type === 'cat' ? x + y.age : x, 0, pets)
   }
 
   const ex4 =
     'Use reduce to return a string of all the dog breeds in the following format: | Dog breed || Dog Breed || Dog Breed |'
   const exercise4 = () => {
-    return null // return answer here
+    return (
+     reduce((x, y) => y.type === 'dog' ? x + ` | ${y.breed} |` : x, '', pets)).slice(1)
   }
 
   const ex5 =
     "Return a string of the names of dogs who can legally drink in the US and whose name includes an 'S'. Try once with compose (map, filter, and reduce), and again with only reduce as an extra challenge."
   const exercise5 = () => {
-    return null // return answer here
+    return compose(reduce((x, y) => x + ` ${y}`, ''),map(x => x.name), filter(x => x.type === 'dog' && x.name.includes('S') && x.age > 20))(pets).slice(1)
   }
 
   /* tests to validate exercises go here */

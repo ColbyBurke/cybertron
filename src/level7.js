@@ -33,7 +33,20 @@ const todos = [
  *
  */
 const challenge1 = todos => {
-  return null
+  console.log(JSON.stringify(todos));
+  
+  const incID = t => {
+    const reducer = (x, y) => {
+      return x + 1
+    }
+    let newID = compose(reduce(reducer, 1))(t)
+    return newID
+  }
+  let obj = { id: incID(todos), text: 'Colby', completed: true }
+  obj = merge(obj, {'completed' : false})
+  todos = append(obj, todos)
+  console.log(JSON.stringify(todos));
+  return todos
 }
 
 /**
@@ -59,7 +72,10 @@ const challenge1 = todos => {
  *
  */
 const challenge2 = (todos, criteria) => {
-  return null
+  let key = criteria.split(':')[0]
+  let value = criteria.split(':')[1]
+  
+  return compose(filter(x => contains(value.toString(), x[key].toString())))(todos)
 }
 
 /**
@@ -75,7 +91,7 @@ const challenge2 = (todos, criteria) => {
  *
  */
 const challenge3 = (todos, id) => {
-  return null
+  return reject(x => propEq('id', id)(x), todos)
 }
 
 /**
@@ -95,37 +111,41 @@ const challenge3 = (todos, id) => {
  *
  */
 const challenge4 = (todos, id, todo) => {
-  return null
+  if(id !== todo.id) return null
+  todos = reject(x => propEq('id', id)(x), todos)
+  todos = append(todo, todos)
+  
+  return todos
 }
 
 export default () => {
   test('Level 7 - Challenge 1', t => {
     const result = challenge1(todos)
-    t.equals(length(result), 5)
-    t.equals(reduce(max, 0, pluck('id', result || [])), 5)
+    t.equal(length(result), 5)
+    t.equal(reduce(max, 0, pluck('id', result || [])), 5)
   })
 
   test('Level 7 - Challenge 2', t => {
     const results1 = challenge2(todos, 'text:r')
 
-    t.equals(length(results1), 3)
+    t.equal(length(results1), 3)
     const results2 = challenge2(todos, 'completed:true')
-    t.equals(length(results2), 2)
+    t.equal(length(results2), 2)
     const results3 = challenge2(todos, 'id:9')
-    t.equals(length(results3), 0)
+    t.equal(length(results3), 0)
   })
 
   test('Level 7 - Challenge 3', t => {
-    t.equals(length(challenge3(todos, 1)), 3)
-    t.equals(length(challenge3(todos, 5)), 4)
+    t.equal(length(challenge3(todos, 1)), 3)
+    t.equal(length(challenge3(todos, 5)), 4)
   })
 
   test('Level 7 - Challenge 4', t => {
     const todoUpdate = { id: 1, text: 'Beep', completed: false }
     const results = challenge4(todos, 1, todoUpdate)
-    t.equals(length(results), 4)
-    t.deepEquals(find(propEq('id', 1), results || []), todoUpdate)
+    t.equal(length(results), 4)
+    t.deepequals(find(propEq('id', 1), results || []), todoUpdate)
     const results2 = challenge4(todos, 3, todoUpdate)
-    t.equals(results2, null)
+    t.equal(results2, null)
   })
 }
